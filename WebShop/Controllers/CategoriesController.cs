@@ -101,8 +101,14 @@ namespace WebShop.Controllers
             {
                 return NotFound();
             }
+            try
+            {
+                _context.Categories.Remove(category);
 
-            _context.Categories.Remove(category);
+            } catch(Exception ex)
+            {
+                return BadRequest();
+            }
             await _context.SaveChangesAsync();
 
             return NoContent();
