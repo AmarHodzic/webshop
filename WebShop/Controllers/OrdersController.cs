@@ -54,6 +54,16 @@ namespace WebShop.Controllers
 
             return Ok(orderProducts);
         }
+
+        //GET: api/Orders/search
+        [HttpGet("search/{keyword}")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersByKeyword(string keyword)
+        {
+            var keywordOrders = _context.Orders.Where(r => r.adress.Contains(keyword));
+
+            return Ok(keywordOrders);
+        }
+
         // PUT: api/Orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}/{orderState}")]

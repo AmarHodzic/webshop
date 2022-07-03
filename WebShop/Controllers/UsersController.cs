@@ -62,6 +62,14 @@ namespace WebShop.Controllers
 
             return user;
         }
+        [AllowAnonymous]
+        [HttpGet("updateadmin")]
+        public ActionResult updateAdmin()
+        {
+            var user =  _context.Users.Include(c => c.orders).FirstOrDefault(i => i.username == "admin");
+
+            return Ok(user);
+        }
 
         //POST: api/Users/authenticate
         [AllowAnonymous]
@@ -120,12 +128,20 @@ namespace WebShop.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
+            var u = await _context.Users.SingleOrDefaultAsync(t=>t.username==user.username);
+            if (u == null)
+            {
+                user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.id }, user);
+                return CreatedAtAction("GetUser", new { id = user.id }, user);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         private readonly RandomNumberGenerator _rng;

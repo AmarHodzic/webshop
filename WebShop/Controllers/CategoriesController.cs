@@ -46,13 +46,22 @@ namespace WebShop.Controllers
         [HttpGet("count/{categoryId}")]
         public int GetProductCountForCategory(int categoryId)
         {
-            return _context.Categories.Include(c => c.products).FirstOrDefault(i => i.id == categoryId).products.Count();
+            return _context.Categories.Include(c => c.products).FirstOrDefault(i => i.id == categoryId).products.Where(x => x.quantity > 0).Count();
         }
 
         [HttpGet("skip/{categoryId}/{brojSkip}")]
         public IEnumerable<Product> GetCategoryByIdAndPage(int categoryId, int brojSkip)
         {
-            return _context.Categories.Include(c => c.products).FirstOrDefault(i => i.id == categoryId).products.Skip(brojSkip * 8).Take(8).ToList();
+            return _context.Categories.Include(c => c.products).FirstOrDefault(i => i.id == categoryId).products.Where(x => x.quantity > 0).Skip(brojSkip * 8).Take(8).ToList();
+        }
+
+        //GET: api/Categories/search
+        [HttpGet("search/{keyword}")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetCategoriesByKeyword(string keyword)
+        {
+            var keywordCategories = _context.Categories.Where(r => r.title.Contains(keyword));
+
+            return Ok(keywordCategories);
         }
 
         // PUT: api/Categories/5

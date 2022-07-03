@@ -27,20 +27,29 @@ namespace WebShop.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Where(x=>x.quantity>0).ToListAsync();
         }
 
         // GET: api/Products
         [HttpGet("count")]
         public async Task<ActionResult<int>> GetProductsCount()
         {
-            return await _context.Products.CountAsync();
+            return await _context.Products.Where(x => x.quantity > 0).CountAsync();
         }
 
         [HttpGet("skip/{brojSkip}")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsByPage(int brojSkip)
         {
-            return await _context.Products.Skip(brojSkip * 8).Take(8).ToListAsync(); 
+            return await _context.Products.Where(x => x.quantity > 0).Skip(brojSkip * 8).Take(8).ToListAsync(); 
+        }
+
+        //GET: api/Products/search
+        [HttpGet("search/{keyword}")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductsByKeyword(string keyword)
+        {
+            var keywordProducts = _context.Products.Where(r => r.title.Contains(keyword));
+
+            return Ok(keywordProducts);
         }
 
         // GET: api/Products/5
