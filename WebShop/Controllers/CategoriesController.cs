@@ -96,13 +96,17 @@ namespace WebShop.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories.Include(x=>x.products).SingleOrDefaultAsync(y=>y.id==id);
             if (category == null)
             {
                 return NotFound();
             }
             try
             {
+                if(category.products.Count > 0)
+                {
+                    return BadRequest();
+                }
                 _context.Categories.Remove(category);
 
             } catch(Exception ex)
